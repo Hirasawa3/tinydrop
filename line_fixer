@@ -1,9 +1,0 @@
-#!/usr/bin/python
-
-fp = open("test","r").read().split("\n")
-print(fp)
-final = ""
-for s in fp:
-	print(s)
-	final += s+"\n"
-open("test_","w").write(final)
