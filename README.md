@@ -1,0 +1,1 @@
+tinydrop is a Python socket library based payload dropper. It can also be operated via modular payloads or custom payloads - modular payloads can be written by communities and whatnot and payload details will be added later on, this readme is placeholder.
